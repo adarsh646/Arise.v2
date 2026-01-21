@@ -51,6 +51,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
   bool _isLoadingProgress = true;
   bool _isSavingProgress = false;
   String? _lastSaveError;
+  late final PageController _pageController;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     if (widget.initialTab != null) {
       _currentWeek = widget.initialTab!.clamp(0, 2);
     }
+    _pageController = PageController(initialPage: _currentWeek);
     _initializeAnimations();
     // Subscribe to live plan updates if a planId is provided
     if (widget.planId != null && widget.planId!.isNotEmpty) {
@@ -99,6 +101,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     _slideController.dispose();
     _workoutTimer?.cancel();
     _planSub?.cancel();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -705,7 +708,21 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
       child: Column(
         children: [
           _buildTabBar(),
-          Expanded(child: _buildContent()),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                if (!mounted) return;
+                setState(() => _currentWeek = index);
+              },
+              children: [
+                _buildOverviewTab(),
+                _buildWorkoutsTab(),
+                _buildProgressTab(),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -733,7 +750,14 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     bool isSelected = _currentWeek == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _currentWeek = index),
+        onTap: () {
+          setState(() => _currentWeek = index);
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          );
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -764,19 +788,6 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         ),
       ),
     );
-  }
-
-  Widget _buildContent() {
-    switch (_currentWeek) {
-      case 0:
-        return _buildOverviewTab();
-      case 1:
-        return _buildWorkoutsTab();
-      case 2:
-        return _buildProgressTab();
-      default:
-        return _buildWorkoutsTab();
-    }
   }
 
   Widget _buildOverviewTab() {

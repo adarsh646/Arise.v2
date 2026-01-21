@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class ManagePredefinedPlansPage extends StatelessWidget {
   const ManagePredefinedPlansPage({super.key});
@@ -84,12 +83,6 @@ class ManagePredefinedPlansPage extends StatelessWidget {
                               false;
                           if (!ok) return;
                           try {
-                            // Attempt to delete Storage cover if exists
-                            if (imageUrl.isNotEmpty) {
-                              try {
-                                await FirebaseStorage.instance.refFromURL(imageUrl).delete();
-                              } catch (_) {}
-                            }
                             await FirebaseFirestore.instance.collection('predefined_plans').doc(doc.id).delete();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Plan deleted')),

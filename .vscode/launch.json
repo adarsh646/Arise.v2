@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter (Cloudinary)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=CLOUDINARY_CLOUD_NAME=djixtjq4n",
+        "--dart-define=CLOUDINARY_UPLOAD_PRESET=ml_default",
+        "--dart-define=CLOUDINARY_UPLOAD_FOLDER=arise"
+      ]
+    }
+  ]
+}

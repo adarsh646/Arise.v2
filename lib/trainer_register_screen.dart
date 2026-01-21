@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'login_screen.dart';
 import 'package:file_picker/file_picker.dart';
+import 'services/cloudinary_service.dart';
 
 class TrainerRegisterScreen extends StatefulWidget {
   const TrainerRegisterScreen({super.key});
@@ -33,10 +33,6 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
 
   final ImagePicker _picker = ImagePicker();
 
-  String? _verificationId;
-  int? _resendToken;
-  DateTime? _codeSentAt;
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -61,104 +57,27 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
 
     setState(() => _isLoading = true);
 
-    User? tempAuthUser;
-
     try {
-      // Step 1: Create the user with email/password first
+      // Create the user with email/password
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
           );
-      tempAuthUser = userCredential.user;
-      if (tempAuthUser == null)
+      final createdUser = userCredential.user;
+      if (createdUser == null) {
         throw Exception("Failed to create user account.");
-
-      // Step 1.5: Send email verification link
-      await tempAuthUser.sendEmailVerification();
-
-      // Step 2: Begin phone number verification
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: _phoneController.text.trim(),
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // This is for auto-retrieval on some Android devices.
-          // The loader will still be on, which is fine.
-          try {
-            if (tempAuthUser == null) throw Exception('User not initialized');
-            await tempAuthUser.linkWithCredential(credential);
-            await _uploadFilesAndSaveData(tempAuthUser.uid);
-          } catch (e) {
-            if (mounted) setState(() => _isLoading = false);
-            rethrow;
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          // Turn off loading and show error if phone verification fails
-          if (mounted) setState(() => _isLoading = false);
-          Fluttertoast.showToast(
-            msg: "Phone verification failed: ${e.message}",
-          );
-          // Rethrow to trigger the cleanup in the main catch block
-          throw e;
-        },
-        codeSent: (String verificationId, int? resendToken) async {
-          // Step 3: Turn off the loader and show the OTP pop-up dialog
-          if (mounted) setState(() => _isLoading = false);
-          _verificationId = verificationId;
-          _resendToken = resendToken;
-          _codeSentAt = DateTime.now();
-          String? smsCode = await _showOtpDialog();
-
-          if (smsCode != null && smsCode.isNotEmpty) {
-            // Turn the loader back on for the final processing step
-            if (mounted) setState(() => _isLoading = true);
-
-            try {
-              final vid = _verificationId;
-              if (vid == null) throw Exception('Verification session unavailable. Please resend the code.');
-              if (_codeSentAt != null && DateTime.now().difference(_codeSentAt!).inMinutes >= 5) {
-                throw Exception('The verification code expired. Please tap Resend Code and try again.');
-              }
-              PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                verificationId: vid,
-                smsCode: smsCode,
-              );
-              // Step 4: Link the phone number to the new account
-              if (tempAuthUser == null) throw Exception('User not initialized');
-              await tempAuthUser.linkWithCredential(credential);
-
-              // Step 5: If successful, proceed to upload files and save data
-              await _uploadFilesAndSaveData(tempAuthUser.uid);
-            } catch (e) {
-              // Rollback partially created user if linking/upload fails
-              try {
-                await tempAuthUser?.delete();
-              } catch (_) {}
-              Fluttertoast.showToast(
-                msg: 'Verification failed: $e',
-                backgroundColor: Colors.red,
-              );
-              if (mounted) setState(() => _isLoading = false);
-            }
-          } else {
-            // User cancelled the dialog
-            Fluttertoast.showToast(msg: 'OTP verification cancelled.');
-          }
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
-      );
-    } catch (e) {
-      // Critical Cleanup Step: If anything fails, delete the partially created user
-      if (tempAuthUser != null) {
-        await tempAuthUser.delete();
-        print("Cleaned up partially created user account.");
       }
 
+      // Send email verification (optional)
+      await createdUser.sendEmailVerification();
+
+      // Upload files and save trainer data
+      await _uploadFilesAndSaveData(createdUser.uid);
+    } catch (e) {
       String errorMessage = "An error occurred. Please try again.";
       if (e is FirebaseAuthException) {
-        if (e.code == 'invalid-phone-number') {
-          errorMessage = 'The phone number provided is not valid.';
-        } else if (e.code == 'email-already-in-use') {
+        if (e.code == 'email-already-in-use') {
           errorMessage = 'An account already exists for that email.';
         } else {
           errorMessage = e.message ?? errorMessage;
@@ -177,11 +96,13 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
     try {
       final profileUrl = await _uploadFile(
         _profileImage!,
-        "trainers/$uid/profile.jpg",
+        folder: "trainers/$uid",
+        resourceType: 'image',
       );
       final certUrl = await _uploadFile(
         _certificateFile!,
-        "trainers/$uid/certificate.pdf",
+        folder: "trainers/$uid",
+        resourceType: 'raw',
       );
 
       if (profileUrl == null || certUrl == null) {
@@ -190,6 +111,7 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
 
       await FirebaseFirestore.instance.collection("users").doc(uid).set({
         "name": _nameController.text.trim(),
+        "username": _nameController.text.trim(),
         "email": _emailController.text.trim(),
         "phoneNumber": _phoneController.text.trim(),
         "qualification": _qualificationController.text.trim(),
@@ -218,38 +140,6 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
     }
   }
 
-  /// Shows the pop-up dialog for OTP entry.
-  Future<String?> _showOtpDialog() {
-    final otpController = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Enter Verification Code"),
-          content: TextField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: "6-digit code"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null), // Cancel
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(otpController.text.trim());
-              },
-              child: const Text("Verify"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
@@ -264,11 +154,19 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
     }
   }
 
-  Future<String?> _uploadFile(File file, String path) async {
+  Future<String?> _uploadFile(
+    File file, {
+    required String folder,
+    String resourceType = 'image',
+  }) async {
     try {
-      final ref = FirebaseStorage.instance.ref().child(path);
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
+      final cloudinary = CloudinaryService.fromEnvironment();
+      final result = await cloudinary.uploadFile(
+        file,
+        resourceType: resourceType,
+        folderOverride: folder,
+      );
+      return result.secureUrl;
     } catch (e) {
       Fluttertoast.showToast(msg: "Upload failed: $e");
       return null;

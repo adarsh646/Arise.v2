@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../services/cloudinary_service.dart';
 import 'manage_predefined_plans_page.dart';
 
 class CreatePlanPage extends StatefulWidget {
@@ -69,15 +69,17 @@ class _CreatePlanPageState extends State<CreatePlanPage> {
   Future<String?> _uploadCover(File? file) async {
     if (file == null) return null;
     try {
-      final name = 'plan_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      // Ensure path matches Storage rules: plan_covers/{userId}/{filename}
-      final path = (uid != null && uid.isNotEmpty)
-          ? 'plan_covers/$uid/$name'
-          : 'plan_covers/unknown/$name';
-      final ref = FirebaseStorage.instance.ref(path);
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
+      final folder = (uid != null && uid.isNotEmpty)
+          ? 'plan_covers/$uid'
+          : 'plan_covers/unknown';
+      final cloudinary = CloudinaryService.fromEnvironment();
+      final result = await cloudinary.uploadFile(
+        file,
+        resourceType: 'image',
+        folderOverride: folder,
+      );
+      return result.secureUrl;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to upload cover: $e')),

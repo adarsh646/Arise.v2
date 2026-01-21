@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import '../services/cloudinary_service.dart';
 
 class AddWorkoutPage extends StatefulWidget {
   final String category;
@@ -116,15 +116,20 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
     }
   }
 
-  Future<String?> _uploadFile(File? file, String folderName) async {
+  Future<String?> _uploadFile(
+    File? file,
+    String folderName, {
+    String resourceType = 'image',
+  }) async {
     if (file == null) return null;
     try {
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
-      final destination = '$folderName/$fileName';
-      final ref = FirebaseStorage.instance.ref(destination);
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
+      final cloudinary = CloudinaryService.fromEnvironment();
+      final result = await cloudinary.uploadFile(
+        file,
+        resourceType: resourceType,
+        folderOverride: folderName,
+      );
+      return result.secureUrl;
     } catch (e) {
       if (mounted)
         ScaffoldMessenger.of(
@@ -186,8 +191,16 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
     setState(() => _isSaving = true);
 
     try {
-      String? gifUrl = await _uploadFile(_gifFile, 'workout_gifs');
-      String? videoUrl = await _uploadFile(_videoFile, 'workout_videos');
+      String? gifUrl = await _uploadFile(
+        _gifFile,
+        'workout_gifs',
+        resourceType: 'image',
+      );
+      String? videoUrl = await _uploadFile(
+        _videoFile,
+        'workout_videos',
+        resourceType: 'video',
+      );
       final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
       final userDoc = await FirebaseFirestore.instance
           .collection('users')

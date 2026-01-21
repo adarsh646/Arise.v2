@@ -5,6 +5,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 // Load values from local.properties
@@ -52,6 +54,15 @@ android {
 dependencies {
     // Provide ProGuard/R8 annotation classes at compile time to satisfy R8 keeps referenced by libraries (e.g., Razorpay)
     compileOnly("com.guardsquare:proguard-annotations:7.4.1")
+    
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    
+    // Add the dependencies for Firebase products you want to use
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
 }
 
 flutter {

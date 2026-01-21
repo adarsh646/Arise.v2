@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import '../utils/role_helper.dart';
+import '../services/cloudinary_service.dart';
 
 class WorkoutDetailsPage extends StatelessWidget {
   final String workoutId;
@@ -422,20 +422,27 @@ class WorkoutDetailsPage extends StatelessWidget {
                                         // Upload picked GIF if any
                                         String? newGifUrl = gifUrlLocal;
                                         String? newVideoUrl = videoUrlLocal;
+                                        final cloudinary = CloudinaryService.fromEnvironment();
                                         if (pickedGif != null && pickedGif!.bytes != null) {
                                           final ext = pickedGif!.extension ?? 'gif';
-                                          final ref = FirebaseStorage.instance
-                                              .ref('workouts/$workoutId/gif_${DateTime.now().millisecondsSinceEpoch}.$ext');
-                                          await ref.putData(pickedGif!.bytes!);
-                                          newGifUrl = await ref.getDownloadURL();
+                                          final result = await cloudinary.uploadBytes(
+                                            pickedGif!.bytes!,
+                                            'gif_${DateTime.now().millisecondsSinceEpoch}.$ext',
+                                            resourceType: 'image',
+                                            folderOverride: 'workouts/$workoutId',
+                                          );
+                                          newGifUrl = result.secureUrl;
                                         }
                                         // Upload picked Video if any
                                         if (pickedVideo != null && pickedVideo!.bytes != null) {
                                           final ext = pickedVideo!.extension ?? 'mp4';
-                                          final ref = FirebaseStorage.instance
-                                              .ref('workouts/$workoutId/video_${DateTime.now().millisecondsSinceEpoch}.$ext');
-                                          await ref.putData(pickedVideo!.bytes!);
-                                          newVideoUrl = await ref.getDownloadURL();
+                                          final result = await cloudinary.uploadBytes(
+                                            pickedVideo!.bytes!,
+                                            'video_${DateTime.now().millisecondsSinceEpoch}.$ext',
+                                            resourceType: 'video',
+                                            folderOverride: 'workouts/$workoutId',
+                                          );
+                                          newVideoUrl = result.secureUrl;
                                         }
 
                                         await FirebaseFirestore.instance

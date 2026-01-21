@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import '../services/cloudinary_service.dart';
 
 class TrainerProfilePage extends StatefulWidget {
   const TrainerProfilePage({super.key});
@@ -46,9 +46,13 @@ class _TrainerProfilePageState extends State<TrainerProfilePage> {
 
   Future<String?> _uploadImage() async {
     if (_imageFile == null) return null;
-    final ref = FirebaseStorage.instance.ref().child("profile_images/$uid.jpg");
-    await ref.putFile(_imageFile!);
-    return await ref.getDownloadURL();
+    final cloudinary = CloudinaryService.fromEnvironment();
+    final result = await cloudinary.uploadFile(
+      _imageFile!,
+      resourceType: 'image',
+      folderOverride: 'profile_images/$uid',
+    );
+    return result.secureUrl;
   }
 
   Future<void> _saveProfile() async {
