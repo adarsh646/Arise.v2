@@ -58,11 +58,18 @@ class StrengthWorkoutsPage extends StatelessWidget {
                       },
                       child: AspectRatio(
                         aspectRatio: 1,
-                        child: Ink.image(
-                          image: AssetImage(g['image']!),
+                        child: Image.asset(
+                          g['image']!,
                           fit: BoxFit.cover,
                           alignment: Alignment.center,
-                          child: const SizedBox.expand(),
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -106,7 +113,6 @@ class StrengthGroupWorkoutsPage extends StatelessWidget {
             .collection('workouts')
             .where('category', isEqualTo: 'Strength')
             .where('muscleGroup', isEqualTo: muscleGroup)
-            .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -142,24 +148,24 @@ class StrengthGroupWorkoutsPage extends StatelessWidget {
                       if (gifUrl != null && gifUrl.isNotEmpty)
                         Image.network(
                           gifUrl,
-                          height: 200,
+                          height: 160,
                           width: double.infinity,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            height: 200,
+                            height: 160,
                             color: Colors.grey[200],
                             child: const Center(child: Icon(Icons.image_not_supported)),
                           ),
                         ),
                       ListTile(
-                        contentPadding: const EdgeInsets.all(12),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         title: Text(
                           data['name'] ?? 'No Name',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Text('Tools: ${data['tools'] ?? 'N/A'}'),
+                          padding: const EdgeInsets.only(top: 2.0),
+                          child: Text('Tools: ${data['tools'] ?? 'N/A'}', style: const TextStyle(fontSize: 13)),
                         ),
                       ),
                     ],

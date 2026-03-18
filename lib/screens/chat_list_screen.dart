@@ -29,9 +29,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
           .doc(_currentUserId)
           .get();
 
-      if (mounted) {
+      if (mounted && userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>?;
         setState(() {
-          _currentUserName = userDoc['name'] ?? userDoc['email'] ?? 'User';
+          _currentUserName = userData?['name'] ?? userData?['email'] ?? 'User';
         });
       }
     } catch (e) {

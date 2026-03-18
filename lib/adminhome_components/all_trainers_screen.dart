@@ -13,7 +13,7 @@ class _AllTrainersScreenState extends State<AllTrainersScreen> {
   // Function to launch the certificate URL in a browser
   Future<void> _viewCertificate(String url) async {
     final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri)) {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,

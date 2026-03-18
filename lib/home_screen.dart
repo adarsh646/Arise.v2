@@ -9,6 +9,8 @@ import 'userhome_components/user_workouts.dart';
 import 'userhome_components/myplan.dart';
 import 'services/calorie_knn.dart';
 import 'widgets/calorie_prediction_card.dart';
+import 'nutrition.dart';
+import 'services/theme_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -390,6 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
       const MyPlanSection(),
       const UserWorkoutsPage(),
       const TrainerSection(),
+      const NutritionPage(),
       _buildProfilePage(), // This now calls our corrected method
     ];
 
@@ -404,6 +407,24 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 238, 255, 65),
+        actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: ThemeService().themeModeNotifier,
+            builder: (context, mode, child) {
+              return IconButton(
+                icon: Icon(
+                  mode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                  color: Colors.black,
+                ),
+                onPressed: () => ThemeService().toggleTheme(),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -420,6 +441,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: "Workouts",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.group), label: "Trainers"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_menu),
+            label: "Nutrition",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),

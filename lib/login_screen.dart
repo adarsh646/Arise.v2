@@ -28,7 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 
   // 🔹 Google Sign-In (use Web Client ID)
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: "272046602474-beptos60v58isj260v52j260v52j260v.apps.googleusercontent.com", // This should match your Google Cloud Console Web Client ID
+  );
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;

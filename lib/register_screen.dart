@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -111,20 +112,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .createUserWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
-          )
-          .catchError((error) {
-            throw error;
-          });
+          );
 
-      // 2. Get the ID token to ensure the user is authenticated
-      await userCredential.user?.reload();
-      await userCredential.user?.getIdToken(true);
+      final user = userCredential.user;
+      if (user == null) throw Exception("User creation failed");
+
+      // 2. Optional: Small delay to ensure Auth state is propagated on Web
+      if (kIsWeb) await Future.delayed(const Duration(milliseconds: 500));
 
       // 3. Create user document in Firestore using batch
       final batch = FirebaseFirestore.instance.batch();
       final userRef = FirebaseFirestore.instance
           .collection('users')
-          .doc(userCredential.user!.uid);
+          .doc(user.uid);
       
       final userData = {
         'username': _usernameController.text.trim(),
@@ -139,10 +139,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // 4. Create user_progress document
       final progressRef = FirebaseFirestore.instance
           .collection('user_progress')
-          .doc(userCredential.user!.uid);
+          .doc(user.uid);
       
       batch.set(progressRef, {
-        'userId': userCredential.user!.uid,
+        'userId': user.uid,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -150,10 +150,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // 5. Create an empty trainer_requests document
       final requestRef = FirebaseFirestore.instance
           .collection('trainer_requests')
-          .doc();
+          .doc(user.uid); // Use UID as doc ID for consistency
       
       batch.set(requestRef, {
-        'userId': userCredential.user!.uid,
+        'userId': user.uid,
+        'clientId': user.uid, // Add clientId to satisfy security rules
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
       });

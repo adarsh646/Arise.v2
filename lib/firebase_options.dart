@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDx8u1L7azaBhe7XkYgDf0cigEdK_b2GyU',
-    appId: '1:23344940897:web:a68fd6d6363e2d5a6ae720',
-    messagingSenderId: '23344940897',
-    projectId: 'arise-3d33b',
-    authDomain: 'arise-3d33b.firebaseapp.com',
-    storageBucket: 'arise-3d33b.firebasestorage.app',
-    measurementId: 'G-G07660XD3X',
+    apiKey: 'AIzaSyBHXTiKdj_2zQrcoU8PqPBubMdAAS0eZw0',
+    appId: '1:110669120182:web:3ed85d86fb137935b09c17',
+    messagingSenderId: '110669120182',
+    projectId: 'arise-72bdd',
+    authDomain: 'arise-72bdd.firebaseapp.com',
+    storageBucket: 'arise-72bdd.firebasestorage.app',
+    measurementId: 'G-D1KDHWY93X',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCpmVVQsLzmUIqu9H4EanSyGlAITUfxjPE',
-    appId: '1:23344940897:android:575f05bf21d4a4a76ae720',
-    messagingSenderId: '23344940897',
-    projectId: 'arise-3d33b',
-    storageBucket: 'arise-3d33b.firebasestorage.app',
+    apiKey: 'AIzaSyDfhPGI2cpw1QKA7tdk183hhBoHMSMVxI8',
+    appId: '1:110669120182:android:07b7274facfae30bb09c17',
+    messagingSenderId: '110669120182',
+    projectId: 'arise-72bdd',
+    storageBucket: 'arise-72bdd.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBPJCgWZA0aSvnXZUhJ66czP9dFC7aY4G4',
-    appId: '1:23344940897:ios:251e360e05cdc3f86ae720',
-    messagingSenderId: '23344940897',
-    projectId: 'arise-3d33b',
-    storageBucket: 'arise-3d33b.firebasestorage.app',
+    apiKey: 'AIzaSyB1ZfGmDjmUGCMEjw-Kb9F5fwUC2-dO6rg',
+    appId: '1:110669120182:ios:8b3858bc32833d58b09c17',
+    messagingSenderId: '110669120182',
+    projectId: 'arise-72bdd',
+    storageBucket: 'arise-72bdd.firebasestorage.app',
     iosBundleId: 'com.example.arise',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBPJCgWZA0aSvnXZUhJ66czP9dFC7aY4G4',
-    appId: '1:23344940897:ios:251e360e05cdc3f86ae720',
-    messagingSenderId: '23344940897',
-    projectId: 'arise-3d33b',
-    storageBucket: 'arise-3d33b.firebasestorage.app',
+    apiKey: 'AIzaSyB1ZfGmDjmUGCMEjw-Kb9F5fwUC2-dO6rg',
+    appId: '1:110669120182:ios:8b3858bc32833d58b09c17',
+    messagingSenderId: '110669120182',
+    projectId: 'arise-72bdd',
+    storageBucket: 'arise-72bdd.firebasestorage.app',
     iosBundleId: 'com.example.arise',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDx8u1L7azaBhe7XkYgDf0cigEdK_b2GyU',
-    appId: '1:23344940897:web:c15103d1280759a26ae720',
-    messagingSenderId: '23344940897',
-    projectId: 'arise-3d33b',
-    authDomain: 'arise-3d33b.firebaseapp.com',
-    storageBucket: 'arise-3d33b.firebasestorage.app',
-    measurementId: 'G-NX53KDZMBN',
+    apiKey: 'AIzaSyBHXTiKdj_2zQrcoU8PqPBubMdAAS0eZw0',
+    appId: '1:110669120182:web:86bdef21cd56a46ab09c17',
+    messagingSenderId: '110669120182',
+    projectId: 'arise-72bdd',
+    authDomain: 'arise-72bdd.firebaseapp.com',
+    storageBucket: 'arise-72bdd.firebasestorage.app',
+    measurementId: 'G-84YJ8RK5R0',
   );
 
 }

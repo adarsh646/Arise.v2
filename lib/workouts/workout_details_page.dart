@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
 import '../utils/role_helper.dart';
 import '../services/cloudinary_service.dart';
+import '../screens/posture_correction_screen.dart';
 
 class WorkoutDetailsPage extends StatelessWidget {
   final String workoutId;
@@ -184,7 +185,17 @@ class WorkoutDetailsPage extends StatelessWidget {
                                     FilledButton(
                                       onPressed: () async {
                                         await tts.stop();
-                                        if (Navigator.canPop(ctx)) Navigator.pop(ctx);
+                                        if (Navigator.canPop(ctx)) {
+                                          Navigator.pop(ctx);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => PostureCorrectionScreen(
+                                                workoutName: name,
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: const Text('Start Now'),
                                     ),

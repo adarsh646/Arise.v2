@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access for posture correction during workouts.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access if you want to record videos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to pick profile pictures.</string>
 </dict>
 </plist>

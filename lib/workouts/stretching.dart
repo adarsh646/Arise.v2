@@ -20,7 +20,6 @@ class StretchingWorkoutsPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('workouts')
             .where('category', isEqualTo: categoryName)
-            .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -88,13 +87,13 @@ class StretchingWorkoutsPage extends StatelessWidget {
                       if (gifUrl != null && gifUrl.isNotEmpty)
                         Image.network(
                           gifUrl,
-                          height: 200,
+                          height: 160,
                           width: double.infinity,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, progress) {
                             if (progress == null) return child;
                             return Container(
-                              height: 200,
+                              height: 160,
                               color: Colors.grey[200],
                               child: const Center(
                                 child: CircularProgressIndicator(),
@@ -103,13 +102,13 @@ class StretchingWorkoutsPage extends StatelessWidget {
                           },
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              height: 200,
+                              height: 160,
                               color: Colors.grey[200],
                               child: const Center(
                                 child: Icon(
                                   Icons.image_not_supported,
                                   color: Colors.grey,
-                                  size: 50,
+                                  size: 40,
                                 ),
                               ),
                             );
@@ -117,18 +116,19 @@ class StretchingWorkoutsPage extends StatelessWidget {
                         ),
 
                       ListTile(
-                        contentPadding: const EdgeInsets.all(12),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         title: Text(
                           workoutData['name'] ?? 'No Name',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                         ),
                         subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
+                          padding: const EdgeInsets.only(top: 2.0),
                           child: Text(
                             "Tools: ${workoutData['tools'] ?? 'N/A'}",
+                            style: const TextStyle(fontSize: 13),
                           ),
                         ),
                       ),

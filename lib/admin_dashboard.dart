@@ -5,6 +5,7 @@ import 'adminhome_components/managetrainer.dart';
 import 'adminhome_components/all_trainers_screen.dart'; 
 import 'adminhome_components/workouts_admin_screen.dart';
 import 'adminhome_components/create_plan_page.dart';
+import 'services/theme_service.dart';
 
 // Main Dashboard Widget
 class AdminDashboard extends StatefulWidget {
@@ -53,6 +54,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 238, 255, 65),
         actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: ThemeService().themeModeNotifier,
+            builder: (context, mode, child) {
+              return IconButton(
+                icon: Icon(
+                  mode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                  color: Colors.black,
+                ),
+                onPressed: () => ThemeService().toggleTheme(),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () => _logout(context),

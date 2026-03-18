@@ -61,32 +61,23 @@ class _TrainerProfilePageState extends State<TrainerProfilePage> {
     setState(() => _isSaving = true);
 
     try {
-      String? imageUrl = await _uploadImage();
       final userRef = FirebaseFirestore.instance.collection("users").doc(uid);
-
-      // First, get the user's existing data to access their role
-      final userSnapshot = await userRef.get();
-      final userData = userSnapshot.data() ?? <String, dynamic>{};
-
-      final num? parsedFee = num.tryParse(_feeController.text.trim());
+      
+      String? imageUrl = await _uploadImage();
+      
+      final feeText = _feeController.text.trim();
+      final num? parsedFee = num.tryParse(feeText);
 
       final Map<String, dynamic> updateData = {
         "name": _nameController.text.trim(),
-        // Store fee as number when possible
-        if (parsedFee != null)
-          "fee": parsedFee
-        else
-          "fee": _feeController.text.trim(),
-        // Preserve role if present; do not overwrite with null
-        if (userData.containsKey("role") && userData["role"] != null)
-          "role": userData["role"],
+        "fee": parsedFee ?? feeText,
       };
 
       if (imageUrl != null) {
         updateData["profileImage"] = imageUrl;
       }
 
-      await userRef.set(updateData, SetOptions(merge: true));
+      await userRef.update(updateData);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,10 +85,11 @@ class _TrainerProfilePageState extends State<TrainerProfilePage> {
         );
       }
     } catch (e) {
+      debugPrint("Error updating profile: $e");
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error updating profile: $e")));
+        ).showSnackBar(SnackBar(content: Text("Error updating profile: ${e.toString()}")));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -183,7 +175,7 @@ class _TrainerProfilePageState extends State<TrainerProfilePage> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    key: ValueKey(userData["qualification"]),
+                    key: const ValueKey("qualification_field"),
                     initialValue: userData["qualification"] ?? "N/A",
                     decoration: const InputDecoration(
                       labelText: "Qualification (Read-only)",
@@ -193,7 +185,7 @@ class _TrainerProfilePageState extends State<TrainerProfilePage> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    key: ValueKey(userData["specialization"]),
+                    key: const ValueKey("specialization_field"),
                     initialValue: userData["specialization"] ?? "N/A",
                     decoration: const InputDecoration(
                       labelText: "Specialization (Read-only)",

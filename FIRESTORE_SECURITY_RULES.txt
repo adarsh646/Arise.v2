@@ -30,6 +30,23 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
 
+    // Chat conversations
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth.uid != null && request.auth.uid in resource.data.participants;
+      allow create: if request.auth.uid != null;
+      allow update: if request.auth.uid != null && request.auth.uid in resource.data.participants;
+      allow delete: if request.auth.uid != null && request.auth.uid in resource.data.participants;
+    }
+
+    // Chat messages
+    match /messages/{conversationId} {
+      allow read, write: if request.auth.uid != null;
+      
+      match /texts/{textId} {
+        allow read, write: if request.auth.uid != null;
+      }
+    }
+
     // Allow anyone to read approved trainers (for listing)
     match /users/{trainerId} {
       allow read: if get(/databases/$(database)/documents/users/$(trainerId)).data.role == 'trainer' && get(/databases/$(database)/documents/users/$(trainerId)).data.status == 'approved';

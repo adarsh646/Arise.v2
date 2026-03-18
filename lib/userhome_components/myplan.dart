@@ -77,11 +77,14 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
           stream: FirebaseFirestore.instance
               .collection('predefined_plans')
               .where('section', isEqualTo: section)
-              .orderBy('createdAt', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return const Text('Failed to load plans.');
             }
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return const SizedBox.shrink();
@@ -105,7 +108,7 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
                 final data = doc.data();
                 final String title = (data['title'] ?? 'Fitness Plan').toString();
                 final String? imageUrl = (data['imageUrl']?.toString().trim().isNotEmpty == true)
-                    ? data['imageUrl'].toString()
+                    ? data['imageUrl'].toString().replaceFirst('http://', 'https://')
                     : null;
                 final List tags = (data['tags'] as List?) ?? const [];
                 final int weeks = ((data['plan'] ?? {})['weeks'] is int)
@@ -172,12 +175,13 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
     if (uid == null) return const Center(child: Text("Please log in."));
 
     // ✅ FIX 1: Wrapped the content in a Center widget.
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment:
-              MainAxisAlignment.center, // Helps with vertical centering
+              MainAxisAlignment.start, // Keeps content aligned to the top
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             FutureBuilder<String>(
@@ -193,7 +197,7 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             // --- User's Active AI-generated plan (preferred via plan_progress) ---
             StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               stream: FirebaseFirestore.instance
@@ -328,30 +332,6 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
 
         return Column(
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 238, 255, 65),
-                foregroundColor: const Color.fromARGB(221, 22, 20, 20),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SurveyScreen()),
-                );
-              },
-              child: const Text(
-                "Get My Plan",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 20),
             const Text("Complete the survey to unlock your fitness plan!"),
           ],
         );
@@ -385,12 +365,12 @@ class _PredefinedPlanCard extends StatelessWidget {
         child: Stack(
           children: [
             // Background image
-            AspectRatio(
-              aspectRatio: 1.35,
+            Positioned.fill(
               child: imageUrl != null && imageUrl!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: imageUrl!,
                       fit: BoxFit.cover,
+                      alignment: Alignment.center,
                       fadeInDuration: Duration.zero,
                       fadeOutDuration: Duration.zero,
                       placeholderFadeInDuration: Duration.zero,
@@ -432,14 +412,15 @@ class _PredefinedPlanCard extends StatelessWidget {
               right: 0,
               bottom: 0,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       Color.fromARGB(0, 0, 0, 0),
-                      Color.fromARGB(160, 0, 0, 0),
+                      Color.fromARGB(90, 0, 0, 0),
+                      Color.fromARGB(200, 0, 0, 0),
                     ],
                   ),
                 ),
@@ -451,7 +432,11 @@ class _PredefinedPlanCard extends StatelessWidget {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     ...tags.take(2).map((t) => _tagRow(t)).toList(),
@@ -493,11 +478,14 @@ class _PredefinedPlanCard extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
     );
   }
 }
-

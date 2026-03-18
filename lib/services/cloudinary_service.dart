@@ -23,14 +23,10 @@ class CloudinaryService {
   final String? folder;
 
   static CloudinaryService fromEnvironment() {
-    const cloudName = String.fromEnvironment('CLOUDINARY_CLOUD_NAME');
-    const uploadPreset = String.fromEnvironment('CLOUDINARY_UPLOAD_PRESET');
+    const cloudName = String.fromEnvironment('CLOUDINARY_CLOUD_NAME', defaultValue: 'deys5ddce');
+    const uploadPreset = String.fromEnvironment('CLOUDINARY_UPLOAD_PRESET', defaultValue: 'arise_uploads');
     const folder = String.fromEnvironment('CLOUDINARY_UPLOAD_FOLDER');
-    if (cloudName.isEmpty || uploadPreset.isEmpty) {
-      throw StateError(
-        'Cloudinary config missing. Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET.',
-      );
-    }
+    
     return CloudinaryService(
       cloudName: cloudName,
       uploadPreset: uploadPreset,
@@ -40,7 +36,7 @@ class CloudinaryService {
 
   Future<CloudinaryUploadResult> uploadFile(
     File file, {
-    String resourceType = 'image',
+    String resourceType = 'auto',
     String? folderOverride,
   }) async {
     final uri =
@@ -69,7 +65,7 @@ class CloudinaryService {
   Future<CloudinaryUploadResult> uploadBytes(
     Uint8List bytes,
     String fileName, {
-    String resourceType = 'image',
+    String resourceType = 'auto',
     String? folderOverride,
   }) async {
     final uri =

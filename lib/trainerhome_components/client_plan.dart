@@ -19,6 +19,52 @@ class ClientPlanPage extends StatefulWidget {
 }
 
 class _ClientPlanPageState extends State<ClientPlanPage> {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+  _fetchClientPlanDocs() async {
+    try {
+      final filteredSnapshot = await FirebaseFirestore.instance
+          .collection('fitness_plans')
+          .where('userId', isEqualTo: widget.clientId)
+          .get();
+      return filteredSnapshot.docs;
+    } on FirebaseException catch (e) {
+      if (e.code != 'failed-precondition') rethrow;
+
+      // Fallback for projects where the composite index has not been deployed yet.
+      final fullSnapshot = await FirebaseFirestore.instance
+          .collection('fitness_plans')
+          .get();
+      return fullSnapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['userId'] == widget.clientId;
+      }).toList();
+    }
+  }
+
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> _filterAndSortAiPlans(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final aiPlans = docs.where((doc) {
+      final data = doc.data();
+      final source = data['source'] as String?;
+      return source == 'rapidapi' ||
+          source == 'rapidapi+fallback' ||
+          source == 'local_network_fallback' ||
+          source == 'ai' ||
+          source == null;
+    }).toList();
+
+    aiPlans.sort((a, b) {
+      final dateA =
+          (a.data()['createdAt'] as Timestamp?)?.toDate() ?? DateTime(1970);
+      final dateB =
+          (b.data()['createdAt'] as Timestamp?)?.toDate() ?? DateTime(1970);
+      return dateB.compareTo(dateA);
+    });
+
+    return aiPlans;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +79,8 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
         ),
         elevation: 0,
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('fitness_plans')
-            .where('userId', isEqualTo: widget.clientId)
-            .get(),
+      body: FutureBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+        future: _fetchClientPlanDocs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -56,7 +99,10 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
             );
           }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          final docs = snapshot.data ?? const [];
+          final aiPlans = _filterAndSortAiPlans(docs);
+
+          if (aiPlans.isEmpty) {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: const [
@@ -72,23 +118,6 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
               ],
             );
           }
-
-          // Filter relevant sources and sort by createdAt desc
-          final List<QueryDocumentSnapshot> aiPlans = snapshot.data!.docs
-              .where((doc) {
-                final source = doc['source'] as String?;
-                return source == 'rapidapi' ||
-                    source == 'rapidapi+fallback' ||
-                    source == 'local_network_fallback' ||
-                    source == 'ai' ||
-                    source == null; // fallback if not set
-              })
-              .toList()
-            ..sort((a, b) {
-              final dateA = (a['createdAt'] as Timestamp?)?.toDate() ?? DateTime(1970);
-              final dateB = (b['createdAt'] as Timestamp?)?.toDate() ?? DateTime(1970);
-              return dateB.compareTo(dateA);
-            });
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -206,11 +235,25 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
                     SizedBox(
                       width: 130,
                       child: ElevatedButton.icon(
-                        onPressed: () => _viewPlanDetails(context, planData, planId),
-                        icon: const Icon(Icons.visibility),
-                        label: const Text('View'),
+                        onPressed: () => _viewPlanProgress(context, planData, planId),
+                        icon: const Icon(Icons.trending_up),
+                        label: const Text('Progress'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(0, 40),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 130,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _viewPlanDetails(context, planData, planId),
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('View Plan'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
                           foregroundColor: Colors.white,
                           minimumSize: const Size(0, 40),
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -335,12 +378,11 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
     return fallback;
   }
 
-  void _viewPlanDetails(
+  void _viewPlanProgress(
     BuildContext context,
     Map<String, dynamic> planData,
     String planId,
   ) {
-    final plan = planData;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -348,7 +390,23 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
           clientId: widget.clientId,
           clientName: widget.clientName,
           planId: planId,
-          planTitle: plan['title'] ?? 'AI Workout Plan',
+          planTitle: planData['title'] ?? 'AI Workout Plan',
+        ),
+      ),
+    );
+  }
+
+  void _viewPlanDetails(
+    BuildContext context,
+    Map<String, dynamic> planData,
+    String planId,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WorkoutPlanDisplayScreen(
+          plan: planData,
+          planId: planId,
         ),
       ),
     );

@@ -59,7 +59,7 @@ class ManageTrainersScreen extends StatelessWidget {
     String certificateUrl,
   ) async {
     final Uri uri = Uri.parse(certificateUrl);
-    if (!await launchUrl(uri)) {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

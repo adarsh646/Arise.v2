@@ -102,7 +102,7 @@ class _TrainerRegisterScreenState extends State<TrainerRegisterScreen> {
       final certUrl = await _uploadFile(
         _certificateFile!,
         folder: "trainers/$uid",
-        resourceType: 'raw',
+        resourceType: 'auto',
       );
 
       if (profileUrl == null || certUrl == null) {

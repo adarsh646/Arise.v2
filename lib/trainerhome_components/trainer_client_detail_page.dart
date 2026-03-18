@@ -56,6 +56,8 @@ class _TrainerClientDetailPageState extends State<TrainerClientDetailPage> {
         children: [
           // Page 1: Survey Details
           _buildSurveyDetailsPage(),
+          // Page 2: AI Workout Plans
+          _buildAIWorkoutPlansPage(),
         ],
       ),
       bottomNavigationBar: Container(
@@ -75,6 +77,7 @@ class _TrainerClientDetailPageState extends State<TrainerClientDetailPage> {
                       ? Colors.blue
                       : Colors.transparent,
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const RoundedRectangleBorder(),
                 ),
                 child: Text(
                   'Survey',
@@ -88,25 +91,22 @@ class _TrainerClientDetailPageState extends State<TrainerClientDetailPage> {
             ),
             Expanded(
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ClientPlanPage(
-                        clientId: widget.clientId,
-                        clientName: widget.clientName,
-                      ),
-                    ),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                onPressed: () => _pageController.animateToPage(
+                  1,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                 ),
-                child: const Text(
+                style: TextButton.styleFrom(
+                  backgroundColor: _currentPage == 1
+                      ? Colors.blue
+                      : Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const RoundedRectangleBorder(),
+                ),
+                child: Text(
                   'AI Plans',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: _currentPage == 1 ? Colors.white : Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -190,34 +190,9 @@ class _TrainerClientDetailPageState extends State<TrainerClientDetailPage> {
 
   // ============ PAGE 2: AI WORKOUT PLANS ============
   Widget _buildAIWorkoutPlansPage() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.auto_awesome, size: 64, color: Colors.grey),
-            const SizedBox(height: 12),
-            const Text('Open full trainer plan view'),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ClientPlanPage(
-                      clientId: widget.clientId,
-                      clientName: widget.clientName,
-                    ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Open AI Plans'),
-            ),
-          ],
-        ),
-      ),
+    return ClientPlanPage(
+      clientId: widget.clientId,
+      clientName: widget.clientName,
     );
   }
 

@@ -4,6 +4,8 @@ import 'login_screen.dart';
 import 'trainerhome_components/trainer_clients.dart';
 import 'trainerhome_components/trainer_workouts.dart';
 import 'trainerhome_components/trainer_profile.dart';
+import 'trainerhome_components/diet.dart';
+import 'services/theme_service.dart';
 
 // Converted to a StatefulWidget to manage the navigation state
 class TrainerDashboard extends StatefulWidget {
@@ -20,6 +22,7 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
   static const List<Widget> _pages = <Widget>[
     TrainerClientsPage(),
     TrainerWorkoutsPage(),
+    DietPage(),
     TrainerProfilePage(),
   ];
 
@@ -50,6 +53,18 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 238, 255, 65),
         actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: ThemeService().themeModeNotifier,
+            builder: (context, mode, child) {
+              return IconButton(
+                icon: Icon(
+                  mode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                  color: Colors.black,
+                ),
+                onPressed: () => ThemeService().toggleTheme(),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
             onPressed: () => _logout(context),
@@ -69,6 +84,10 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
             label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_menu),
+            label: 'Diet',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.badge), label: 'Profile'),
         ],
