@@ -22,7 +22,7 @@ Future<void> openWorkoutDialog({
     await tts.speak(parts.join('. '));
   }
 
-  String _formatTime(int seconds) {
+  String formatTime(int seconds) {
     final m = (seconds ~/ 60).toString().padLeft(2, '0');
     final s = (seconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
@@ -68,7 +68,7 @@ Future<void> openWorkoutDialog({
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            _formatTime(seconds),
+                            formatTime(seconds),
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                           ),
                         ],

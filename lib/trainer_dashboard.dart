@@ -32,7 +32,7 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
     });
   }
 
-  void _logout(BuildContext context) async {
+  void _logout() async {
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
@@ -67,7 +67,7 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () => _logout(context),
+            onPressed: _logout,
           ),
         ],
       ),

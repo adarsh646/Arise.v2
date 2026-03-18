@@ -55,8 +55,9 @@ class TrainerSection extends StatelessWidget {
             List<DocumentSnapshot> unpaidTrainers = [];
 
             for (var trainer in trainers) {
-              if (currentUser.uid == trainer.id)
+              if (currentUser.uid == trainer.id) {
                 continue; // Skip current user if trainer
+              }
 
               if (paidTrainerIds.contains(trainer.id)) {
                 paidTrainers.add(trainer);
@@ -336,6 +337,7 @@ class _TrainerListItemState extends State<_TrainerListItem> {
         .doc(currentUser.uid)
         .get();
 
+    if (!mounted) return;
     if (!clientDoc.exists || clientDoc.data() == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Could not find your user profile.")),

@@ -5,7 +5,7 @@ import '../services/chat_service.dart';
 import 'chat_screen.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({Key? key}) : super(key: key);
+  const ChatListScreen({super.key});
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -30,7 +30,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           .get();
 
       if (mounted && userDoc.exists) {
-        final userData = userDoc.data() as Map<String, dynamic>?;
+        final userData = userDoc.data();
         setState(() {
           _currentUserName = userData?['name'] ?? userData?['email'] ?? 'User';
         });
@@ -210,6 +210,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           onTap: () async {
                             // Mark as read before navigating so badges clear immediately
                             await ChatService().markConversationAsRead(conversationId);
+                            if (!context.mounted) return;
                             final result = await Navigator.push<bool>(
                               context,
                               MaterialPageRoute(
@@ -232,11 +233,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
+                              color: Colors.white.withValues(alpha: 0.95),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),

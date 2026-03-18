@@ -31,7 +31,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     });
   }
 
-  void _logout(BuildContext context) async {
+  void _logout() async {
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
@@ -68,7 +68,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () => _logout(context),
+            onPressed: _logout,
           ),
         ],
       ),

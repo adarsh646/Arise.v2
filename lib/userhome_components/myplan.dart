@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../survey_screen.dart';
 import '../screens/workout_plan_display.dart';
 import '../screens/predefined_plan_workouts_screen.dart';
 
@@ -92,7 +91,7 @@ class _MyPlanSectionState extends State<MyPlanSection> with AutomaticKeepAliveCl
 
             final docs = snapshot.data!.docs;
             return GridView.builder(
-              key: PageStorageKey('predefined_${section}'),
+              key: PageStorageKey('predefined_$section'),
               itemCount: docs.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -397,7 +396,7 @@ class _PredefinedPlanCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.65),
+                  color: Colors.black.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Text(
@@ -439,7 +438,7 @@ class _PredefinedPlanCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    ...tags.take(2).map((t) => _tagRow(t)).toList(),
+                    ...tags.take(2).map((t) => _tagRow(t)),
                   ],
                 ),
               ),
@@ -474,7 +473,7 @@ class _PredefinedPlanCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color.withOpacity(0.95)),
+          Icon(icon, size: 14, color: color.withValues(alpha: 0.95)),
           const SizedBox(width: 6),
           Text(
             label,

@@ -81,6 +81,7 @@ class _CreatePlanPageState extends State<CreatePlanPage> {
       );
       return result.secureUrl;
     } catch (e) {
+      if (!mounted) return null;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to upload cover: $e')),
       );
@@ -219,7 +220,7 @@ class _CreatePlanPageState extends State<CreatePlanPage> {
                 ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _selectedSection,
+                initialValue: _selectedSection,
                 items: _sections
                     .map((s) => DropdownMenuItem<String>(value: s, child: Text(s)))
                     .toList(),
@@ -300,11 +301,11 @@ class _CreatePlanPageState extends State<CreatePlanPage> {
                         title: Text(data['name'] ?? 'Workout'),
                         subtitle: Text((data['muscleGroup'] ?? data['tools'] ?? '').toString()),
                       );
-                    }).toList(),
+                    }),
                     const Divider(height: 24),
                   ],
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 12),
               _saving
                   ? const Center(child: CircularProgressIndicator())

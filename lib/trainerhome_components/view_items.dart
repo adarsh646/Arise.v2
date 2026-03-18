@@ -175,7 +175,8 @@ class _ViewItemsPageState extends State<ViewItemsPage> {
                     'fiberUnit': 'g',
                     'alternates': alternates,
                   });
-                  if (mounted) Navigator.pop(ctx);
+                  if (!ctx.mounted) return;
+                  Navigator.pop(ctx);
                 }
               },
               child: const Text('Save'),

@@ -25,11 +25,10 @@ class _PredefinedPlanWorkoutsScreenState extends State<PredefinedPlanWorkoutsScr
     final planMap = widget.plan['plan'] as Map<String, dynamic>? ?? {};
     final days = (planMap['days'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Stop any ongoing TTS when user presses back
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
         await FlutterTts().stop();
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -73,7 +72,7 @@ class _DayCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.12),
+            color: Colors.grey.withValues(alpha: 0.12),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -134,6 +133,7 @@ class _ExerciseTileState extends State<_ExerciseTile> {
           ? instructions
           : 'Perform ${widget.exercise['name'] ?? 'exercise'}. Sets: ${widget.exercise['sets'] ?? '-'}, Reps: ${widget.exercise['reps'] ?? '-'}.';
 
+      if (!context.mounted) return;
       await openWorkoutDialog(
         context: context,
         gifUrl: gifUrl,
@@ -154,7 +154,7 @@ class _ExerciseTileState extends State<_ExerciseTile> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 6),
       leading: CircleAvatar(
-        backgroundColor: const Color(0xFF667eea).withOpacity(0.12),
+        backgroundColor: const Color(0xFF667eea).withValues(alpha: 0.12),
         child: const Icon(Icons.fitness_center, color: Color(0xFF667eea)),
       ),
       title: Text(
@@ -167,7 +167,7 @@ class _ExerciseTileState extends State<_ExerciseTile> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.12),
+                color: Colors.orange.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('Sets $sets  Reps $reps', style: const TextStyle(color: Colors.orange)),

@@ -99,19 +99,37 @@ class _PostureCorrectionScreenState extends State<PostureCorrectionScreen> {
     }
   }
 
+  void _updateFeedback(String message) {
+    if (!mounted) return;
+    setState(() {
+      _feedback = message;
+    });
+  }
+
+  Future<void> _configureCameraSafely(CameraController controller) async {
+    try {
+      await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    } catch (_) {}
+    try {
+      await controller.setFlashMode(FlashMode.off);
+    } catch (_) {}
+    try {
+      await controller.setFocusMode(FocusMode.auto);
+    } catch (_) {}
+    try {
+      await controller.setExposureMode(ExposureMode.auto);
+    } catch (_) {}
+  }
+
   Future<void> _initializeCamera() async {
     final status = await Permission.camera.request();
     if (!status.isGranted) {
-      setState(() {
-        _feedback = "Camera permission denied";
-      });
+      _updateFeedback("Camera permission denied");
       return;
     }
 
     if (cameras.isEmpty) {
-      setState(() {
-        _feedback = "No cameras found";
-      });
+      _updateFeedback("No cameras found");
       return;
     }
 
@@ -147,10 +165,7 @@ class _PostureCorrectionScreenState extends State<PostureCorrectionScreen> {
 
     try {
       await controller.initialize();
-      await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
-      await controller.setFlashMode(FlashMode.off);
-      await controller.setFocusMode(FocusMode.auto);
-      await controller.setExposureMode(ExposureMode.auto);
+      await _configureCameraSafely(controller);
 
       _controller = controller;
       _selectedCameraIndex = cameraIndex;
@@ -186,7 +201,7 @@ class _PostureCorrectionScreenState extends State<PostureCorrectionScreen> {
 
   void _startAnalysis() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 700), (_) {
       if (!_isProcessing &&
           _controller != null &&
           _controller!.value.isInitialized) {

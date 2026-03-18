@@ -79,7 +79,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
       final bmi = _calculateBmi();
 
       await FirebaseFirestore.instance.collection("surveys").doc(uid).set({
-        "dob": dob != null ? dob!.toIso8601String() : null,
+        "dob": dob?.toIso8601String(),
         "age": age,
         "gender": gender,
         "height": heightController.text,
@@ -95,7 +95,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
       await PlanGeneratorService().generateAndSavePlan(userId: uid);
 
-      if (context.mounted) {
+      if (!mounted) return;
+      {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -106,7 +107,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      if (context.mounted) {
+      if (!mounted) return;
+      {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Error: $e")));
@@ -146,7 +148,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         );
       case 1:
         return DropdownButtonFormField(
-          value: gender,
+          initialValue: gender,
           decoration: const InputDecoration(labelText: "Gender"),
           items: [
             "Male",
@@ -163,8 +165,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
           validator: (value) {
             if (value == null || value.isEmpty) return "Enter your height";
             final h = double.tryParse(value);
-            if (h == null || h < 50 || h > 300)
+            if (h == null || h < 50 || h > 300) {
               return "Enter a valid height (50–300 cm)";
+            }
             return null;
           },
         );
@@ -176,14 +179,15 @@ class _SurveyScreenState extends State<SurveyScreen> {
           validator: (value) {
             if (value == null || value.isEmpty) return "Enter your weight";
             final w = double.tryParse(value);
-            if (w == null || w < 20 || w > 500)
+            if (w == null || w < 20 || w > 500) {
               return "Enter a valid weight (20–500 kg)";
+            }
             return null;
           },
         );
       case 4:
         return DropdownButtonFormField(
-          value: fitnessGoal,
+          initialValue: fitnessGoal,
           decoration: const InputDecoration(labelText: "Fitness Goal"),
           items: [
             "Overall Fitness",
@@ -198,7 +202,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         );
       case 5:
         return DropdownButtonFormField(
-          value: activityLevel,
+          initialValue: activityLevel,
           decoration: const InputDecoration(labelText: "Activity Level"),
           items: [
             "Beginner",
@@ -209,7 +213,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         );
       case 6:
         return DropdownButtonFormField<int>(
-          value: daysPerWeek,
+          initialValue: daysPerWeek,
           decoration: const InputDecoration(labelText: "Days per week"),
           items: List.generate(7, (i) => i + 1)
               .map((d) => DropdownMenuItem(value: d, child: Text("$d days")))
@@ -218,7 +222,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         );
       case 7:
         return DropdownButtonFormField<int>(
-          value: sessionDuration,
+          initialValue: sessionDuration,
           decoration: const InputDecoration(labelText: "Session duration (minutes)"),
           items: const [20, 30, 45, 60, 75, 90]
               .map((d) => DropdownMenuItem(value: d, child: Text("$d minutes")))
@@ -227,7 +231,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         );
       case 8:
         return DropdownButtonFormField<int>(
-          value: planDurationWeeks,
+          initialValue: planDurationWeeks,
           decoration: const InputDecoration(labelText: "Plan duration (weeks)"),
           items: const [4, 6, 8, 10, 12, 16]
               .map((w) => DropdownMenuItem(value: w, child: Text("$w weeks")))

@@ -1,6 +1,7 @@
+// ignore_for_file: unused_element, use_build_context_synchronously, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:arise/trainerhome_components/client_plan.dart';
 
 class TrainerClientDetailPage extends StatefulWidget {
@@ -8,10 +9,10 @@ class TrainerClientDetailPage extends StatefulWidget {
   final String clientName;
 
   const TrainerClientDetailPage({
-    Key? key,
+    super.key,
     required this.clientId,
     required this.clientName,
-  }) : super(key: key);
+  });
 
   @override
   State<TrainerClientDetailPage> createState() =>

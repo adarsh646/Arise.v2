@@ -116,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
           ),
 
           // Dark overlay for better text contrast
-          Container(color: Colors.black.withOpacity(0.3)),
+          Container(color: Colors.black.withValues(alpha: 0.3)),
 
           // Centered content
           FadeTransition(

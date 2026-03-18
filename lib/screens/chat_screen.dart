@@ -9,12 +9,12 @@ class ChatScreen extends StatefulWidget {
   final String currentUserName;
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.conversationId,
     required this.otherUserId,
     required this.otherUserName,
     required this.currentUserName,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -146,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -186,12 +186,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Ensure messages are marked as read before leaving
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
         await _markMessagesAsRead();
-        Navigator.pop(context, true); // Return true to notify parent to refresh
-        return false;
+        if (!context.mounted) return;
+        Navigator.pop(context, true);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -319,7 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20),
                   ),

@@ -51,8 +51,8 @@ class PlanGeneratorService {
         },
       }, SetOptions(merge: true));
     } catch (e) {
-      print("Error generating and saving plan: $e");
-      throw e;
+      debugPrint("Error generating and saving plan: $e");
+      rethrow;
     }
   }
 
@@ -67,7 +67,7 @@ class PlanGeneratorService {
       // On Flutter Web, browser CORS will block most RapidAPI requests.
       // Use a local fallback plan so the app continues to work on Chrome/Web.
       if (kIsWeb) {
-        print(
+        debugPrint(
           '[PlanGen] Web detected. Using local fallback plan to avoid CORS.',
         );
         return _generateLocalPlan(userId: userId, surveyData: surveyData);
@@ -111,8 +111,8 @@ class PlanGeneratorService {
         'lang': apiLang,
       };
 
-      print('[PlanGen] POST $uri');
-      print('[PlanGen] Payload: ' + json.encode(payload));
+      debugPrint('[PlanGen] POST $uri');
+      debugPrint('[PlanGen] Payload: ${json.encode(payload)}');
       Map<String, dynamic> usedPayload = payload;
       // Light retry to handle transient network issues
       http.Response? response;
@@ -145,16 +145,16 @@ class PlanGeneratorService {
         throw lastErr ?? Exception('Network request failed');
       }
 
-      if (response!.statusCode != 200) {
-        print('[PlanGen] RapidAPI planner failed: ${response!.statusCode}');
-        print('[PlanGen] Response headers: ${response!.headers}');
-        print('[PlanGen] Response body: ${response!.body}');
+      if (response.statusCode != 200) {
+        debugPrint('[PlanGen] RapidAPI planner failed: ${response.statusCode}');
+        debugPrint('[PlanGen] Response headers: ${response.headers}');
+        debugPrint('[PlanGen] Response body: ${response.body}');
         throw Exception(
-          'RapidAPI error ${response!.statusCode}: ${response!.body}',
+          'RapidAPI error ${response.statusCode}: ${response.body}',
         );
       }
 
-      dynamic decoded = json.decode(response!.body);
+      dynamic decoded = json.decode(response.body);
       // Some APIs return a JSON string inside JSON. Try to decode again if so.
       if (decoded is String) {
         try {
@@ -212,7 +212,7 @@ class PlanGeneratorService {
               )['plan']['days'],
             };
       if (!hasDays) {
-        print(
+        debugPrint(
           '[PlanGen] API returned no explicit days/exercises; synthesized local days for device.',
         );
       }
@@ -228,7 +228,7 @@ class PlanGeneratorService {
         'input': usedPayload,
       };
     } catch (e) {
-      print('RapidAPI planner error: $e');
+      debugPrint('RapidAPI planner error: $e');
       return null;
     }
   }

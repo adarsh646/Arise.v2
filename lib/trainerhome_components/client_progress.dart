@@ -56,6 +56,7 @@ class ClientProgressPage extends StatelessWidget {
                   filename: '${clientName.replaceAll(' ', '_')}_progress.pdf',
                 );
               } catch (e) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to generate PDF: $e')),
                 );
@@ -177,9 +178,9 @@ class ClientProgressPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -325,7 +326,7 @@ Future<Uint8List> _buildProgressPdf({
         if (rows.isEmpty)
           pw.Text('No days in this plan.')
         else
-          pw.Table.fromTextArray(
+          pw.TableHelper.fromTextArray(
             headers: const ['Day', 'Completed'],
             data: rows,
           ),

@@ -46,6 +46,7 @@ class WorkoutDetailScreen extends StatelessWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -275,9 +276,9 @@ class WorkoutDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         label,
@@ -300,8 +301,9 @@ Future<void> _openWorkoutDialog({
 
   Future<void> speakAll() async {
     final parts = <String>[];
-    if (instructions.trim().isNotEmpty)
+    if (instructions.trim().isNotEmpty) {
       parts.add('Instructions: $instructions');
+    }
     if (warning.trim().isNotEmpty) parts.add('Warning: $warning');
     if (parts.isEmpty) return;
     await tts.setLanguage('en-US');

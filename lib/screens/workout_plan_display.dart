@@ -11,8 +11,7 @@ class WorkoutPlanDisplayScreen extends StatefulWidget {
   final String? planId;
   final int? initialTab;
 
-  const WorkoutPlanDisplayScreen({Key? key, required this.plan, this.planId, this.initialTab})
-    : super(key: key);
+  const WorkoutPlanDisplayScreen({super.key, required this.plan, this.planId, this.initialTab});
 
   @override
   State<WorkoutPlanDisplayScreen> createState() =>
@@ -28,7 +27,6 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
 
   int _currentWeek = 1;
   Map<String, bool> _completedExercises = {};
-  Map<String, int> _exerciseProgress = {};
   int _completedWeeks = 0;
 
   // Timeline view tracking
@@ -116,21 +114,6 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
       setState(() {
         _timerSeconds++;
       });
-    });
-  }
-
-  void _stopTimer() {
-    _workoutTimer?.cancel();
-    setState(() {
-      _isTimerRunning = false;
-    });
-  }
-
-  void _resetTimer() {
-    _workoutTimer?.cancel();
-    setState(() {
-      _timerSeconds = 0;
-      _isTimerRunning = false;
     });
   }
 
@@ -389,11 +372,13 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
 
   int get _totalWeeks {
     final planMap = widget.plan['plan'] as Map<String, dynamic>?;
-    if (planMap != null && planMap['weeks'] is int)
+    if (planMap != null && planMap['weeks'] is int) {
       return planMap['weeks'] as int;
+    }
     final input = widget.plan['input'] as Map<String, dynamic>?;
-    if (input != null && input['plan_duration_weeks'] is int)
+    if (input != null && input['plan_duration_weeks'] is int) {
       return input['plan_duration_weeks'] as int;
+    }
     return 4;
   }
 
@@ -503,7 +488,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IconButton(
@@ -529,11 +514,11 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                       ),
                     ),
                     Text(
-                      'Week ${_currentWeekNumber} of $_totalWeeks',
+                      'Week $_currentWeekNumber of $_totalWeeks',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
                       ),
                     ),
@@ -564,7 +549,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white30),
           ),
@@ -596,7 +581,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white30),
           ),
@@ -628,7 +613,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.2),
+            color: Colors.red.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.red),
           ),
@@ -651,9 +636,9 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.1),
+        color: Colors.green.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.green.withOpacity(0.3)),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
       ),
       child: const Row(
         mainAxisSize: MainAxisSize.min,
@@ -670,7 +655,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -767,7 +752,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
+                      color: Colors.grey.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -856,9 +841,9 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -885,8 +870,8 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF667eea).withOpacity(0.1),
-            const Color(0xFF764ba2).withOpacity(0.1),
+            const Color(0xFF667eea).withValues(alpha: 0.1),
+            const Color(0xFF764ba2).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -961,7 +946,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -1037,7 +1022,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                       const Icon(Icons.lock, size: 64, color: Colors.grey),
                       const SizedBox(height: 16),
                       Text(
-                        'Day ${_selectedDayNumber} is locked',
+                        'Day $_selectedDayNumber is locked',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1060,7 +1045,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                     // Day header
                     Container(
                       padding: const EdgeInsets.all(12),
-                      color: const Color(0xFF667eea).withOpacity(0.05),
+                      color: const Color(0xFF667eea).withValues(alpha: 0.05),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1068,7 +1053,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Day ${_selectedDayNumber}',
+                                'Day $_selectedDayNumber',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -1081,7 +1066,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.2),
+                                    color: Colors.green.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Colors.green),
                                   ),
@@ -1144,206 +1129,6 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     );
   }
 
-  Widget _noExercisesHint(dynamic content) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFFFECB3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'No exercises were detected in this plan',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'The AI may have returned a narrative plan without explicit exercise lists. We will show the raw plan below. You can try adjusting your survey (days/week, duration) and regenerating.',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _debugRawPlan(dynamic content) {
-    String pretty;
-    try {
-      if (content is String) {
-        final s = content.trim();
-        if ((s.startsWith('{') && s.endsWith('}')) ||
-            (s.startsWith('[') && s.endsWith(']'))) {
-          pretty = const JsonEncoder.withIndent('  ').convert(json.decode(s));
-        } else {
-          pretty = content;
-        }
-      } else {
-        pretty = const JsonEncoder.withIndent('  ').convert(content);
-      }
-    } catch (_) {
-      pretty = content.toString();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-        backgroundColor: Colors.grey[50],
-        collapsedBackgroundColor: Colors.grey[100],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        collapsedShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: const Text('Debug: Raw Plan Data'),
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                pretty,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  color: Colors.grey[800],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimerControls() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(
-            child: _buildTimerButton(
-              _isTimerRunning ? 'Pause' : 'Start',
-              _isTimerRunning ? Icons.pause : Icons.play_arrow,
-              _isTimerRunning ? _stopTimer : _startTimer,
-              _isTimerRunning ? Colors.orange : Colors.green,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildTimerButton(
-              'Reset',
-              Icons.refresh,
-              _resetTimer,
-              Colors.red,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimerButton(
-    String label,
-    IconData icon,
-    VoidCallback onTap,
-    Color color,
-  ) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 16),
-      label: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-        overflow: TextOverflow.ellipsis,
-      ),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: color,
-        backgroundColor: color.withOpacity(0.08),
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
-          side: BorderSide(color: color.withOpacity(0.3)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWorkoutDayCard(Map<String, dynamic> day, int dayNumber) {
-    final title = day['day'] ?? day['title'] ?? 'Day $dayNumber';
-    final exercises = (day['exercises'] as List?) ?? [];
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.all(12),
-          childrenPadding: const EdgeInsets.only(
-            left: 12,
-            right: 12,
-            bottom: 12,
-          ),
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                dayNumber.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            title.toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          subtitle: Text(
-            '${exercises.length} exercises',
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-          children: [
-            ...exercises
-                .map(
-                  (exercise) => _buildExerciseCard(
-                    exercise as Map<String, dynamic>? ?? {},
-                    '$dayNumber-${exercises.indexOf(exercise)}',
-                  ),
-                )
-                .toList(),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildExerciseCard(Map<String, dynamic> exercise, String exerciseId) {
     final name = exercise['name'] ?? exercise['exercise'] ?? 'Exercise';
@@ -1357,12 +1142,12 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isCompleted ? Colors.green.withOpacity(0.1) : Colors.grey[50],
+        color: isCompleted ? Colors.green.withValues(alpha: 0.1) : Colors.grey[50],
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isCompleted
-              ? Colors.green.withOpacity(0.3)
-              : Colors.grey.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -1443,7 +1228,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -1514,7 +1299,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                 child: CircularProgressIndicator(
                   value: percentage,
                   strokeWidth: 8,
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundColor: Colors.white.withValues(alpha: 0.3),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ),
@@ -1532,7 +1317,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
           Text(
             '$completed of $total exercises completed',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 14,
             ),
           ),
@@ -1540,7 +1325,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
           Text(
             'Weeks: $_completedWeeks / $_totalWeeks',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -1585,7 +1370,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1661,12 +1446,12 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: unlocked ? Colors.amber.withOpacity(0.1) : Colors.grey[100],
+        color: unlocked ? Colors.amber.withValues(alpha: 0.1) : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: unlocked
-              ? Colors.amber.withOpacity(0.3)
-              : Colors.grey.withOpacity(0.2),
+              ? Colors.amber.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -1950,51 +1735,11 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
     return completedCount;
   }
 
-  /// Count total exercises in a week
-  int _getTotalExercisesInWeek(int weekNumber) {
-    final weeks = _cachedWeeks;
-    if (weekNumber < 1 || weekNumber > weeks.length) return 0;
-
-    final week = weeks[weekNumber - 1];
-    int totalCount = 0;
-
-    for (int i = 0; i < week.length; i++) {
-      final globalDayNumber = (weekNumber - 1) * 7 + i + 1;
-      final exercises = _getExercisesForDay(globalDayNumber);
-      totalCount += exercises.length;
-    }
-    return totalCount;
-  }
-
-  /// Count completed exercises in a week
-  int _getCompletedExercisesInWeek(int weekNumber) {
-    final weeks = _cachedWeeks;
-    if (weekNumber < 1 || weekNumber > weeks.length) return 0;
-
-    final week = weeks[weekNumber - 1];
-    int completedCount = 0;
-
-    for (int i = 0; i < week.length; i++) {
-      final globalDayNumber = (weekNumber - 1) * 7 + i + 1;
-      final dayIndex = globalDayNumber - 1;
-      final exercises = _getExercisesForDay(globalDayNumber);
-
-      for (int j = 0; j < exercises.length; j++) {
-        final exerciseId = '$dayIndex-$j';
-        if (_completedExercises[exerciseId] ?? false) {
-          completedCount++;
-        }
-      }
-    }
-    return completedCount;
-  }
-
   /// Build weekly timeline view with day circles
   Widget _buildWeeklyTimeline(
     int weekNumber,
     List<Map<String, dynamic>> weekDays,
   ) {
-    final weeks = _cachedWeeks;
     final globalDayStart = (weekNumber - 1) * 7 + 1;
 
     return Column(
@@ -2020,7 +1765,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF667eea).withOpacity(0.1),
+                  color: const Color(0xFF667eea).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -2075,7 +1820,7 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                       height: 50,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.amber.withOpacity(0.2),
+                        color: Colors.amber.withValues(alpha: 0.2),
                         border: Border.all(color: Colors.amber, width: 2),
                       ),
                       child: const Icon(
@@ -2090,15 +1835,15 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
                       height: 50,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         border: Border.all(
-                          color: Colors.grey.withOpacity(0.3),
+                          color: Colors.grey.withValues(alpha: 0.3),
                           width: 2,
                         ),
                       ),
                       child: Icon(
                         Icons.emoji_events,
-                        color: Colors.grey.withOpacity(0.3),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         size: 28,
                       ),
                     ),
@@ -2131,26 +1876,26 @@ class _WorkoutPlanDisplayScreenState extends State<WorkoutPlanDisplayScreen>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isCompleted
-              ? const Color(0xFF4CAF50).withOpacity(0.2)
+              ? const Color(0xFF4CAF50).withValues(alpha: 0.2)
               : isSelected
-              ? const Color(0xFF667eea).withOpacity(0.3)
+              ? const Color(0xFF667eea).withValues(alpha: 0.3)
               : isUnlocked
               ? Colors.white
-              : Colors.grey.withOpacity(0.1),
+              : Colors.grey.withValues(alpha: 0.1),
           border: Border.all(
             color: isCompleted
                 ? Colors.green
                 : isSelected
                 ? const Color(0xFF667eea)
                 : isUnlocked
-                ? const Color(0xFF667eea).withOpacity(0.5)
-                : Colors.grey.withOpacity(0.3),
+                ? const Color(0xFF667eea).withValues(alpha: 0.5)
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 3 : 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF667eea).withOpacity(0.3),
+                    color: const Color(0xFF667eea).withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),

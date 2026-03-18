@@ -9,10 +9,10 @@ class ClientPlanPage extends StatefulWidget {
   final String clientName;
 
   const ClientPlanPage({
-    Key? key,
+    super.key,
     required this.clientId,
     required this.clientName,
-  }) : super(key: key);
+  });
 
   @override
   State<ClientPlanPage> createState() => _ClientPlanPageState();
@@ -124,7 +124,7 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
             itemCount: aiPlans.length,
             itemBuilder: (context, index) {
               final planDoc = aiPlans[index];
-              final planData = planDoc.data() as Map<String, dynamic>;
+              final planData = planDoc.data();
               return _buildAIPlanCard(context, planDoc.id, planData);
             },
           );
@@ -143,7 +143,6 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
     final source = planData['source'] ?? 'AI Generated';
     final createdAt = planData['createdAt'] as Timestamp?;
     final planMap = planData['plan'] as Map<String, dynamic>? ?? {};
-    final daysCount = ((planMap['days'] as List?) ?? []).length;
 
     String sourceLabel = '';
     Color sourceBadgeColor = Colors.blue;
@@ -187,7 +186,7 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: sourceBadgeColor.withOpacity(0.3),
+                color: sourceBadgeColor.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -553,15 +552,18 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
                             'workoutRef': selectedWorkoutId,
                           },
                         );
-                        if (mounted) Navigator.pop(dialogCtx);
-                        if (mounted) {
+                        if (!dialogCtx.mounted) return;
+                        Navigator.pop(dialogCtx);
+                        if (!mounted) return;
+                        {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Workout added to plan')),
                           );
                           setState(() {});
                         }
                       } catch (e) {
-                        if (mounted) {
+                        if (!context.mounted) return;
+                        {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Error: $e')),
                           );
@@ -737,15 +739,18 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
                             'reps': newReps,
                           },
                         );
-                        if (mounted) Navigator.pop(dialogCtx);
-                        if (mounted) {
+                        if (!dialogCtx.mounted) return;
+                        Navigator.pop(dialogCtx);
+                        if (!mounted) return;
+                        {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Workout changed')),
                           );
                           setState(() {});
                         }
                       } catch (e) {
-                        if (mounted) {
+                        if (!context.mounted) return;
+                        {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Error: $e')),
                           );
@@ -1060,26 +1065,4 @@ class _ClientPlanPageState extends State<ClientPlanPage> {
     );
   }
 
-  Widget _buildDetailBox(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 238, 255, 65),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
 }

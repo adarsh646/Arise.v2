@@ -6,10 +6,10 @@ class ClientSurveyDetailPage extends StatelessWidget {
   final String clientName;
 
   const ClientSurveyDetailPage({
-    Key? key,
+    super.key,
     required this.clientId,
     required this.clientName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

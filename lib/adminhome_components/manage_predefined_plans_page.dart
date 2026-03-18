@@ -84,10 +84,12 @@ class ManagePredefinedPlansPage extends StatelessWidget {
                           if (!ok) return;
                           try {
                             await FirebaseFirestore.instance.collection('predefined_plans').doc(doc.id).delete();
+                            if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Plan deleted')),
                             );
                           } catch (e) {
+                            if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Failed to delete: $e')),
                             );

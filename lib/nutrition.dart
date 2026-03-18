@@ -445,7 +445,7 @@ class _DietPreferenceDialogState extends State<_DietPreferenceDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: _dietType,
+                initialValue: _dietType,
                 decoration: const InputDecoration(labelText: 'Diet Type'),
                 items: const ['veg', 'nonveg', 'vegan', 'eggetarian']
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -454,7 +454,7 @@ class _DietPreferenceDialogState extends State<_DietPreferenceDialog> {
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<int>(
-                value: _mealsPerDay,
+                initialValue: _mealsPerDay,
                 decoration: const InputDecoration(labelText: 'Meals Per Day'),
                 items: const [3, 4, 5]
                     .map((e) => DropdownMenuItem(value: e, child: Text('$e')))
@@ -463,7 +463,7 @@ class _DietPreferenceDialogState extends State<_DietPreferenceDialog> {
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
-                value: _diabetes,
+                initialValue: _diabetes,
                 decoration: const InputDecoration(labelText: 'Diabetes Status'),
                 items: const ['none', 'prediabetes', 'type1', 'type2', 'gestational', 'unknown']
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -472,7 +472,7 @@ class _DietPreferenceDialogState extends State<_DietPreferenceDialog> {
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
-                value: _bp,
+                initialValue: _bp,
                 decoration: const InputDecoration(labelText: 'BP Status'),
                 items: const ['none', 'elevated', 'stage1', 'stage2', 'unknown']
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))

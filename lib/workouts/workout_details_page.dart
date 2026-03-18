@@ -117,11 +117,13 @@ class WorkoutDetailsPage extends StatelessWidget {
                           ),
                           onPressed: () async {
                             final tts = FlutterTts();
+                            final navigator = Navigator.of(context);
                             await tts.setLanguage('en-US');
                             await tts.setSpeechRate(0.45);
                             await tts.setVolume(1.0);
                             await tts.setPitch(1.0);
 
+                            if (!context.mounted) return;
                             await showDialog<void>(
                               context: context,
                               barrierDismissible: false,
@@ -185,10 +187,11 @@ class WorkoutDetailsPage extends StatelessWidget {
                                     FilledButton(
                                       onPressed: () async {
                                         await tts.stop();
+                                        if (!ctx.mounted) return;
                                         if (Navigator.canPop(ctx)) {
                                           Navigator.pop(ctx);
-                                          Navigator.push(
-                                            context,
+                                          if (!context.mounted) return;
+                                          navigator.push(
                                             MaterialPageRoute(
                                               builder: (_) => PostureCorrectionScreen(
                                                 workoutName: name,
@@ -252,7 +255,8 @@ class WorkoutDetailsPage extends StatelessWidget {
                                     .collection('workouts')
                                     .doc(workoutId)
                                     .delete();
-                                if (context.mounted) Navigator.pop(context);
+                                if (!context.mounted) return;
+                                Navigator.pop(context);
                               }
                             },
                             icon: const Icon(Icons.delete),
@@ -332,7 +336,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                                                 Text(
                                                   pickedGif != null
                                                       ? 'Selected: ${pickedGif!.name}'
-                                                      : (gifUrlLocal != null && gifUrlLocal!.isNotEmpty
+                                                      : (gifUrlLocal != null && gifUrlLocal.isNotEmpty
                                                           ? 'Current GIF is set'
                                                           : 'No GIF selected'),
                                                   style: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -364,7 +368,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                                                 Text(
                                                   pickedVideo != null
                                                       ? 'Selected: ${pickedVideo!.name}'
-                                                      : (videoUrlLocal != null && videoUrlLocal!.isNotEmpty
+                                                      : (videoUrlLocal != null && videoUrlLocal.isNotEmpty
                                                           ? 'Current video is set'
                                                           : 'No video selected'),
                                                   style: const TextStyle(fontSize: 12, color: Colors.grey),

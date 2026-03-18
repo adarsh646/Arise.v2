@@ -131,10 +131,11 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
       );
       return result.secureUrl;
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Failed to upload file: $e")));
+      }
       return null;
     }
   }
@@ -249,8 +250,7 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add New ${widget.category} Workout" +
-            (widget.muscleGroup != null ? " • ${widget.muscleGroup}" : "")),
+        title: Text("Add New ${widget.category} Workout${widget.muscleGroup != null ? " • ${widget.muscleGroup}" : ""}"),
         backgroundColor: const Color.fromARGB(255, 238, 255, 65),
       ),
       body: SingleChildScrollView(
@@ -268,7 +268,7 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: _selectedMuscleGroup,
+                    initialValue: _selectedMuscleGroup,
                     items: strengthGroups
                         .map((g) => DropdownMenuItem(
                               value: g,

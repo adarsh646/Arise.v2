@@ -241,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fit: StackFit.expand,
                   children: [
                     Image.asset('assets/gym.jpg', fit: BoxFit.cover),
-                    Container(color: Colors.black.withOpacity(0.4)),
+                    Container(color: Colors.black.withValues(alpha: 0.4)),
                     const Center(
                       child: Text(
                         'Login',
